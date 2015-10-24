@@ -158,3 +158,14 @@ TEST_F(OthelloBoardTest, makeVaildCells) {
     ASSERT_EQ(vaildCells.size(), std::size_t(0));
 }
 
+TEST_F(OthelloBoardTest, isFinished) {
+    auto blackBoard = OthelloAI::BlackBoard();
+    auto whiteBoard = OthelloAI::WhiteBoard();
+
+    ASSERT_EQ(isFinished(blackBoard, whiteBoard), false);
+
+    blackBoard = OthelloAI::BlackBoard(0xffefff5f7f3f1f0f);
+    whiteBoard = OthelloAI::WhiteBoard(0x001000a080c0e0f0);
+    ASSERT_EQ(isFinished(blackBoard, whiteBoard), true);
+}
+

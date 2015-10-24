@@ -152,6 +152,11 @@ Cells makeVaildCells(const OthelloBoard<myColor> &myBoard, const OthelloBoard<en
     return std::move(cells);
 }
 
+template<CellState myColor, CellState enemyColor>
+bool isFinished(const OthelloBoard<myColor> &myBoard, const OthelloBoard<enemyColor> &enemyBoard) noexcept {
+    return makeVaildCells(myBoard, enemyBoard).empty() && makeVaildCells(enemyBoard, myBoard).empty();
+}
+
 } // end OthelloAI
 
 #endif
