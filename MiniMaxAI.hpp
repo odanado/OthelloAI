@@ -6,9 +6,9 @@
 
 namespace OthelloAI {
 
-class MinMaxAI {
+class MiniMaxAI {
 public:
-    MinMaxAI(CellState myColor, CellState enemyColor);
+    MiniMaxAI(CellState myColor, CellState enemyColor);
 
     template<CellState Color1, CellState Color2>
     CellType operator()(const OthelloBoard<Color1> &board1, const OthelloBoard<Color2> &board2) noexcept;

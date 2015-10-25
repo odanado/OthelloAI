@@ -5,9 +5,9 @@
 
 namespace OthelloAI {
 
-const u32 MinMaxAI::DEPTH_LEVAL = 6;
+const u32 MiniMaxAI::DEPTH_LEVAL = 6;
 
-MinMaxAI::MinMaxAI(CellState myColor, CellState enemyColor) : 
+MiniMaxAI::MiniMaxAI(CellState myColor, CellState enemyColor) : 
     myColor(myColor), enemyColor(enemyColor) {
         assert(myColor != CellState::NONE);
         assert(enemyColor != CellState::NONE);
@@ -15,7 +15,7 @@ MinMaxAI::MinMaxAI(CellState myColor, CellState enemyColor) :
     }
 
 template<CellState Color1, CellState Color2>
-CellType MinMaxAI::operator()(const OthelloBoard<Color1> &board1, const OthelloBoard<Color2> &board2) noexcept {
+CellType MiniMaxAI::operator()(const OthelloBoard<Color1> &board1, const OthelloBoard<Color2> &board2) noexcept {
     static_assert(Color1 != Color2,"");
     assert(Color1 == myColor);
     assert(Color2 == enemyColor);
@@ -46,7 +46,7 @@ CellType MinMaxAI::operator()(const OthelloBoard<Color1> &board1, const OthelloB
 
 
 template<CellState Color1, CellState Color2>
-i64 MinMaxAI::dfs(const OthelloBoard<Color1> &board1, const OthelloBoard<Color2> &board2, u32 depth) noexcept {
+i64 MiniMaxAI::dfs(const OthelloBoard<Color1> &board1, const OthelloBoard<Color2> &board2, u32 depth) noexcept {
     static_assert(Color1 != Color2,"");
 
     if(depth > DEPTH_LEVAL && Color1 == myColor) {
@@ -82,9 +82,9 @@ i64 MinMaxAI::dfs(const OthelloBoard<Color1> &board1, const OthelloBoard<Color2>
 }
 
 template<CellState Color1, CellState Color2>
-i64 MinMaxAI::eval(const OthelloBoard<Color1> &board1, const OthelloBoard<Color2> &board2) noexcept {
-    i64 result = board1.popCount();
-    result -= (i64) board2.popCount();
+i64 MiniMaxAI::eval(const OthelloBoard<Color1> &board1, const OthelloBoard<Color2> &board2) noexcept {
+    i64 result = board1.countStone();
+    result -= (i64) board2.countStone();
 
     if(board1.existStone(0,0)) result += 2;
     if(board1.existStone(0,7)) result += 2;
@@ -98,14 +98,14 @@ i64 MinMaxAI::eval(const OthelloBoard<Color1> &board1, const OthelloBoard<Color2
     return result;
 }
 
-template CellType MinMaxAI::operator()<CellState::BLACK, CellState::WHITE>(const OthelloBoard<CellState::BLACK>&, const OthelloBoard<CellState::WHITE>&) noexcept;
-template CellType MinMaxAI::operator()(const OthelloBoard<CellState::WHITE>&, const OthelloBoard<CellState::BLACK>&) noexcept;
+template CellType MiniMaxAI::operator()<CellState::BLACK, CellState::WHITE>(const OthelloBoard<CellState::BLACK>&, const OthelloBoard<CellState::WHITE>&) noexcept;
+template CellType MiniMaxAI::operator()(const OthelloBoard<CellState::WHITE>&, const OthelloBoard<CellState::BLACK>&) noexcept;
 
-template i64 MinMaxAI::dfs(const OthelloBoard<CellState::BLACK>&, const OthelloBoard<CellState::WHITE>&,u32) noexcept;
-template i64 MinMaxAI::dfs(const OthelloBoard<CellState::WHITE>&, const OthelloBoard<CellState::BLACK>&,u32) noexcept;
+template i64 MiniMaxAI::dfs(const OthelloBoard<CellState::BLACK>&, const OthelloBoard<CellState::WHITE>&,u32) noexcept;
+template i64 MiniMaxAI::dfs(const OthelloBoard<CellState::WHITE>&, const OthelloBoard<CellState::BLACK>&,u32) noexcept;
 
-template i64 MinMaxAI::eval(const OthelloBoard<CellState::BLACK>&, const OthelloBoard<CellState::WHITE>&) noexcept;
-template i64 MinMaxAI::eval(const OthelloBoard<CellState::WHITE>&, const OthelloBoard<CellState::BLACK>&) noexcept;
+template i64 MiniMaxAI::eval(const OthelloBoard<CellState::BLACK>&, const OthelloBoard<CellState::WHITE>&) noexcept;
+template i64 MiniMaxAI::eval(const OthelloBoard<CellState::WHITE>&, const OthelloBoard<CellState::BLACK>&) noexcept;
 
 
 } // end OhelloAI
