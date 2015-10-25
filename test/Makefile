@@ -12,4 +12,4 @@ $(TARGET):$(OBJS)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $<
 
 clean:
-	rm $(OBJS) $(TARGET)
+	- rm -rf $(OBJS) $(TARGET)
