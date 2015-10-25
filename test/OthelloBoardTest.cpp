@@ -1,5 +1,5 @@
 #include "../OthelloBoard.hpp"
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 class OthelloBoardTest : public ::testing::Test {
 protected:
