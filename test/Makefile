@@ -10,6 +10,10 @@ TARGET = test.out
 
 $(TARGET):$(OBJS)
 	$(CXX) $(CXXFLAGS) -I $(INCLUDE) $(OBJS) -o $(TARGET)
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -I $(INCLUDE) -o $@ -c $<
+%.o: %.cc
+	$(CXX) $(CXXFLAGS) -I $(INCLUDE) -o $@ -c $<
 
 clean:
 	- rm -rf $(OBJS) $(TARGET)
