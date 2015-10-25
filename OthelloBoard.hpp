@@ -45,7 +45,7 @@ public:
         return bitBoard;
     }
 
-    u64 popCount() const noexcept {
+    u64 countStone() const noexcept {
         return __builtin_popcount(bitBoard) + __builtin_popcount(bitBoard >> 32);
     }
 
@@ -59,6 +59,10 @@ public:
         return bitBoard == rhs.bitBoard;
     }
 
+    template<CellState myColor>
+    friend u64 countStone(const OthelloBoard<myColor> &myBoard) noexcept;
+    template<CellState myColor>
+    friend bool existStone(const OthelloBoard<myColor> &myBoard, u64 y, u64 x) noexcept;
 
     template<CellState myColor, CellState enemyColor>
     friend bool reverseStone(OthelloBoard<myColor> *myBoard, OthelloBoard<enemyColor> *enemyBoard, u64 y, u64 x, int dy,int dx) noexcept;
@@ -87,6 +91,15 @@ constexpr u64 initCellState<CellState::WHITE>() {
     return 0x1008000000;
 }
 } // end detail
+
+template<CellState myColor>
+u64 countStone(const OthelloBoard<myColor> &myBoard) noexcept {
+    return myBoard.countStone();
+}
+template<CellState myColor>
+bool existStone(const OthelloBoard<myColor> &myBoard, u64 y, u64 x) noexcept {
+    return myBoard.existStone(y,x);
+}
 
 template<CellState myColor, CellState enemyColor>
 bool reverseStone(OthelloBoard<myColor> *myBoard, OthelloBoard<enemyColor> *enemyBoard, u64 y, u64 x, int dy,int dx) noexcept {
@@ -150,6 +163,11 @@ Cells makeVaildCells(const OthelloBoard<myColor> &myBoard, const OthelloBoard<en
     }
 
     return std::move(cells);
+}
+
+template<CellState myColor, CellState enemyColor>
+bool isFinished(const OthelloBoard<myColor> &myBoard, const OthelloBoard<enemyColor> &enemyBoard) noexcept {
+    return makeVaildCells(myBoard, enemyBoard).empty() && makeVaildCells(enemyBoard, myBoard).empty();
 }
 
 } // end OthelloAI

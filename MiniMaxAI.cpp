@@ -1,4 +1,4 @@
-#include "MinMaxAI.hpp"
+#include "MiniMaxAI.hpp"
 #include <cassert>
 #include <limits>
 #include <iostream>
