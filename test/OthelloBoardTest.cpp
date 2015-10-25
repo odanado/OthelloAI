@@ -74,7 +74,7 @@ TEST_F(OthelloBoardTest, OthelloBoard) {
     board.existStone(2,6);
     board.existStone(5,6);
 
-    ASSERT_EQ(board.popCount(), OthelloAI::u64(32));
+    ASSERT_EQ(board.countStone(), OthelloAI::u64(32));
 
     board = OthelloAI::BlackBoard(0x8080c0c48c8080);
 
@@ -97,7 +97,10 @@ TEST_F(OthelloBoardTest, OthelloBoard) {
 
     board.existStone(6,7);
 
-    ASSERT_EQ(board.popCount(), OthelloAI::u64(12));
+    ASSERT_EQ(board.countStone(), OthelloAI::u64(12));
+
+    ASSERT_EQ(board.countStone(), OthelloAI::countStone(board));
+    ASSERT_EQ(board.existStone(3,4), OthelloAI::existStone(board, 3, 4));
 }
 
 TEST_F(OthelloBoardTest, putStone) {
