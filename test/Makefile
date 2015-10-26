@@ -1,16 +1,19 @@
-CXX = g++
-INCLUDE = -I /usr/local/include
-LIBS = -lgtest -lgtest_main
 CXXFLAGS = -g -Wall -Wextra -pthread -std=c++11
+INCLUDE = ./
 
-OBJS = OthelloBoardTest.o
-TARGET = test.o
+SOURCES = $(wildcard *.cpp)
+GTEST_SRC = $(wildcard ./gtest/*.cc)
+OBJS  = $(addprefix ./, $(SOURCES:.cpp=.o))
+OBJS  += $(addprefix , $(GTEST_SRC:.cc=.o))
+
+TARGET = test.out
 
 $(TARGET):$(OBJS)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) $(LIBS) $(OBJS) -o $(TARGET)
-
-.cpp.o:
-	$(CXX) $(CXXFLAGS) $(INCLUDE) -c $<
+	$(CXX) $(CXXFLAGS) -I $(INCLUDE) $(OBJS) -o $(TARGET)
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -I $(INCLUDE) -o $@ -c $<
+%.o: %.cc
+	$(CXX) $(CXXFLAGS) -I $(INCLUDE) -o $@ -c $<
 
 clean:
-	rm $(OBJS) $(TARGET)
+	- rm -rf $(OBJS) $(TARGET)
