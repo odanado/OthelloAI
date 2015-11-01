@@ -8,6 +8,6 @@ protected:
 };
 
 TEST_F(ConfigTest, ConstantValueTest) {
-    ASSERT_EQ(OthelloAI::maxValue<OthelloAI::i64>, -OthelloAI::minValue<OthelloAI::i64>);
+    ASSERT_EQ(OthelloAI::maxValue<OthelloAI::i64>(), -OthelloAI::minValue<OthelloAI::i64>());
 }
 
