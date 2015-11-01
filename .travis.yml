@@ -12,3 +12,4 @@ install:
     - $CXX --version
 script:
     - cd ./test && make clean && make && ./test.out
+    - cd ./benchmark && make clean && make benchmark && ./benchmark.out
