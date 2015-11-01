@@ -12,4 +12,4 @@ install:
     - $CXX --version
 script:
     - cd ./test && make clean && make && ./test.out
-    - cd ../benchmark && make clean && make benchmark && ./benchmark.out
+    - cd ../benchmark && make clean && make benchmark && ./benchmark.out ffotest/end40.pos
