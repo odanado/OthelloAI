@@ -1,5 +1,5 @@
 #include "../OthelloBoard.hpp"
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
 class OthelloBoardTest : public ::testing::Test {
 protected:
@@ -74,7 +74,7 @@ TEST_F(OthelloBoardTest, OthelloBoard) {
     board.existStone(2,6);
     board.existStone(5,6);
 
-    ASSERT_EQ(board.popCount(), OthelloAI::u64(32));
+    ASSERT_EQ(board.countStone(), OthelloAI::u64(32));
 
     board = OthelloAI::BlackBoard(0x8080c0c48c8080);
 
@@ -97,7 +97,10 @@ TEST_F(OthelloBoardTest, OthelloBoard) {
 
     board.existStone(6,7);
 
-    ASSERT_EQ(board.popCount(), OthelloAI::u64(12));
+    ASSERT_EQ(board.countStone(), OthelloAI::u64(12));
+
+    ASSERT_EQ(board.countStone(), OthelloAI::countStone(board));
+    ASSERT_EQ(board.existStone(3,4), OthelloAI::existStone(board, 3, 4));
 }
 
 TEST_F(OthelloBoardTest, putStone) {
@@ -156,5 +159,16 @@ TEST_F(OthelloBoardTest, makeVaildCells) {
 
     vaildCells = makeVaildCells(whiteBoard, blackBoard);
     ASSERT_EQ(vaildCells.size(), std::size_t(0));
+}
+
+TEST_F(OthelloBoardTest, isFinished) {
+    auto blackBoard = OthelloAI::BlackBoard();
+    auto whiteBoard = OthelloAI::WhiteBoard();
+
+    ASSERT_EQ(isFinished(blackBoard, whiteBoard), false);
+
+    blackBoard = OthelloAI::BlackBoard(0xffefff5f7f3f1f0f);
+    whiteBoard = OthelloAI::WhiteBoard(0x001000a080c0e0f0);
+    ASSERT_EQ(isFinished(blackBoard, whiteBoard), true);
 }
 
