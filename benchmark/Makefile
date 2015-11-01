@@ -1,5 +1,5 @@
 CXXFLAGS = -Wall -Wextra -std=c++11
-OPTFLAGS = -O3 -march=native -flto -fno-rtti -fno-stack-protector -DNDEBUG
+OPTFLAGS = -O3 -march=native -fno-rtti -fno-stack-protector -DNDEBUG
 
 SOURCES = $(wildcard *.cpp)
 OBJS  = $(addprefix ./, $(SOURCES:.cpp=.o))
