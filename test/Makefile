@@ -1,4 +1,4 @@
-CXXFLAGS = -g -Wall -Wextra -pthread -std=c++11
+CXXFLAGS = -g -Wall -Wextra -pthread -std=c++14
 INCLUDE = ./
 
 SOURCES = $(wildcard *.cpp)
