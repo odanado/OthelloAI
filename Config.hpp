@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <utility>
+#include <limits>
 
 namespace OthelloAI {
 
@@ -17,6 +18,11 @@ enum CellState {
     BLACK,
     WHITE
 };
+
+template<typename T>
+constexpr T maxValue = std::numeric_limits<T>::max() >> 4;
+template<typename T>
+constexpr T minValue = -maxValue<T>;
 
 using CellType = std::pair<u64, u64>;
 using Cells = std::vector<CellType>;
