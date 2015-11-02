@@ -89,18 +89,25 @@ private:
         if(!vaildCells.size()) {
             return -dfs(board2, board1, depth-1, -beta, -alpha);
         }
+        i64 s;
+        i64 a=alpha;
+        i64 b=beta;
+        bool first=true;
 
         for(const auto &vaildCell : vaildCells) {
             OthelloBoard<Color1> boardTmp1 = board1;
             OthelloBoard<Color2> boardTmp2 = board2;
             putStone(&boardTmp1, &boardTmp2, vaildCell.first, vaildCell.second);
-            alpha = std::max(alpha, -dfs(boardTmp2, boardTmp1, depth-1, -beta, -alpha));
-            if(alpha >= beta) {
-                return alpha;
-            }
+            s = -dfs(boardTmp2, boardTmp1, depth-1, -b, -a);
+            if(s>a && s<beta && depth>1 && !first) a = -dfs(boardTmp2, boardTmp1, depth-1, -beta, -s);
+
+            a=std::max(a,s);
+            if(a>=beta) return a;
+            b=a+1;
+            first=false;
         }
 
-        return alpha;
+        return a;
     }
 };
 
