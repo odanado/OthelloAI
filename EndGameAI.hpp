@@ -11,8 +11,8 @@ namespace OthelloAI {
 
 class EndGameAI {
 public:
-    EndGameAI(CellState myColor = CellState::BLACK, CellState enemyColor = CellState::WHITE) :
-        myColor(myColor), enemyColor(enemyColor), DEPTH_LEVEL(15) {
+    EndGameAI(CellState myColor = CellState::BLACK, CellState enemyColor = CellState::WHITE, i32 depth = 12) :
+        myColor(myColor), enemyColor(enemyColor), DEPTH_LEVEL(depth) {
             assert(myColor != CellState::NONE);
             assert(enemyColor != CellState::NONE);
             assert(myColor != enemyColor);
