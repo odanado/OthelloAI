@@ -4,6 +4,7 @@
 #include "OthelloBoard.hpp"
 #include <cassert>
 #include <vector>
+#include <algorithm>
 
 namespace OthelloAI {
 
@@ -45,7 +46,7 @@ public:
             orderedValidCells.emplace_back(evalValue, vaildCell);
         }
 
-        sort(orderedValidCells.begin(), orderedValidCells.end(), 
+        std::sort(orderedValidCells.begin(), orderedValidCells.end(), 
                 [](const std::pair<i64, CellType> &cell1, const std::pair<i64, CellType> &cell2) {
                     return cell1.first > cell2.first;
                 });
