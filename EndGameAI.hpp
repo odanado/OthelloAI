@@ -3,6 +3,7 @@
 
 #include "OthelloBoard.hpp"
 #include <cassert>
+#include <vector>
 
 namespace OthelloAI {
 
@@ -35,8 +36,23 @@ public:
 
         i64 alpha = minValue<i64>();
         i64 beta = maxValue<i64>();
-
+        std::vector<std::pair<i64,CellType>> orderedValidCells;
         for(const auto &vaildCell : vaildCells) {
+            OthelloBoard<Color1> boardTmp1 = board1;
+            OthelloBoard<Color2> boardTmp2 = board2;
+            putStone(&boardTmp1, &boardTmp2, vaildCell.first, vaildCell.second);
+            i64 evalValue = -dfs(boardTmp2, boardTmp1, 4, -beta, -alpha);
+            orderedValidCells.emplace_back(evalValue, vaildCell);
+        }
+
+        sort(orderedValidCells.begin(), orderedValidCells.end(), 
+                [](const std::pair<i64, CellType> &cell1, const std::pair<i64, CellType> &cell2) {
+                    return cell1.first > cell2.first;
+                });
+
+
+        for(const auto &orderedValidCell : orderedValidCells) {
+            auto vaildCell = orderedValidCell.second;
             OthelloBoard<Color1> boardTmp1 = board1;
             OthelloBoard<Color2> boardTmp2 = board2;
 
