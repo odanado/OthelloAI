@@ -139,12 +139,12 @@ TEST_F(OthelloBoardTest, putStone) {
     ASSERT_EQ(whiteBoard.getBitBoard(), OthelloAI::u64(0x0036546200625400));
 }
 
-TEST_F(OthelloBoardTest, makeVaildCells) {
+TEST_F(OthelloBoardTest, makeValidCells) {
     // http://www.cc.u-tokyo.ac.jp/support/press/news/VOL13/No5/Rennsai201109.pdf の40
     auto blackBoard = OthelloAI::BlackBoard(0x8080c0c48c8080);
     auto whiteBoard = OthelloAI::WhiteBoard(0x10783f3b737e79);
 
-    auto vaildCells =  makeVaildCells(blackBoard, whiteBoard);
+    auto vaildCells =  makeValidCells(blackBoard, whiteBoard);
     ASSERT_EQ(vaildCells.size(), std::size_t(10));
     ASSERT_EQ(vaildCells[0], OthelloAI::CellType(0,1));
     ASSERT_EQ(vaildCells[1], OthelloAI::CellType(0,2));
@@ -157,7 +157,7 @@ TEST_F(OthelloBoardTest, makeVaildCells) {
     ASSERT_EQ(vaildCells[8], OthelloAI::CellType(6,6));
     ASSERT_EQ(vaildCells[9], OthelloAI::CellType(7,3));
 
-    vaildCells = makeVaildCells(whiteBoard, blackBoard);
+    vaildCells = makeValidCells(whiteBoard, blackBoard);
     ASSERT_EQ(vaildCells.size(), std::size_t(0));
 }
 

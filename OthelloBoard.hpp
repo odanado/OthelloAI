@@ -149,7 +149,7 @@ bool putStone(OthelloBoard<myColor> *myBoard, OthelloBoard<enemyColor> *enemyBoa
 }
 
 template<CellState myColor, CellState enemyColor>
-Cells makeVaildCells(const OthelloBoard<myColor> &myBoard, const OthelloBoard<enemyColor> &enemyBoard) noexcept {
+Cells makeValidCells(const OthelloBoard<myColor> &myBoard, const OthelloBoard<enemyColor> &enemyBoard) noexcept {
     Cells cells;
     for(u64 y = 0; y < 8; ++y) {
         for(u64 x = 0; x < 8; ++x) {
@@ -167,7 +167,7 @@ Cells makeVaildCells(const OthelloBoard<myColor> &myBoard, const OthelloBoard<en
 
 template<CellState myColor, CellState enemyColor>
 bool isFinished(const OthelloBoard<myColor> &myBoard, const OthelloBoard<enemyColor> &enemyBoard) noexcept {
-    return makeVaildCells(myBoard, enemyBoard).empty() && makeVaildCells(enemyBoard, myBoard).empty();
+    return makeValidCells(myBoard, enemyBoard).empty() && makeValidCells(enemyBoard, myBoard).empty();
 }
 
 } // end OthelloAI

@@ -30,21 +30,21 @@ public:
         assert(Color2 == enemyColor);
         CellType result(-1,-1);
 
-        auto vaildCells = makeVaildCells(board1, board2);
+        auto validCells = makeValidCells(board1, board2);
 
-        if(!vaildCells.size()) {
+        if(!validCells.size()) {
             return result;
         }
 
         i64 alpha = minValue<i64>();
         i64 beta = maxValue<i64>();
         std::vector<std::pair<i64,CellType>> orderedValidCells;
-        for(const auto &vaildCell : vaildCells) {
+        for(const auto &validCell : validCells) {
             OthelloBoard<Color1> boardTmp1 = board1;
             OthelloBoard<Color2> boardTmp2 = board2;
-            putStone(&boardTmp1, &boardTmp2, vaildCell.first, vaildCell.second);
+            putStone(&boardTmp1, &boardTmp2, validCell.first, validCell.second);
             i64 evalValue = -dfs(boardTmp2, boardTmp1, 4, -beta, -alpha);
-            orderedValidCells.emplace_back(evalValue, vaildCell);
+            orderedValidCells.emplace_back(evalValue, validCell);
         }
 
         std::sort(orderedValidCells.begin(), orderedValidCells.end(), 
@@ -58,11 +58,11 @@ public:
         i64 evalValue  = minValue<i64>();
         bool first=true;
         for(const auto &orderedValidCell : orderedValidCells) {
-            auto vaildCell = orderedValidCell.second;
+            auto validCell = orderedValidCell.second;
             OthelloBoard<Color1> boardTmp1 = board1;
             OthelloBoard<Color2> boardTmp2 = board2;
 
-            putStone(&boardTmp1, &boardTmp2, vaildCell.first, vaildCell.second);
+            putStone(&boardTmp1, &boardTmp2, validCell.first, validCell.second);
             if(first) {
                 evalValue=-dfs(boardTmp2, boardTmp1, DEPTH_LEVEL, -beta,-a);
             }
@@ -77,7 +77,7 @@ public:
 
             if(alpha < evalValue) {
                 alpha = evalValue;
-                result = vaildCell;
+                result = validCell;
             }
         }
 
@@ -137,8 +137,8 @@ private:
             beta = std::min(beta, upper);
         }
 
-        auto vaildCells = makeVaildCells(board1, board2);
-        if(!vaildCells.size()) {
+        auto validCells = makeValidCells(board1, board2);
+        if(!validCells.size()) {
             return -dfs(board2, board1, depth-1, -beta, -alpha);
         }
         i64 score;
@@ -146,10 +146,10 @@ private:
         i64 a=alpha;
         bool first=true;
 
-        for(const auto &vaildCell : vaildCells) {
+        for(const auto &validCell : validCells) {
             OthelloBoard<Color1> boardTmp1 = board1;
             OthelloBoard<Color2> boardTmp2 = board2;
-            putStone(&boardTmp1, &boardTmp2, vaildCell.first, vaildCell.second);
+            putStone(&boardTmp1, &boardTmp2, validCell.first, validCell.second);
             if(first) {
                 score = -dfs(boardTmp2, boardTmp1, depth-1, -beta, -a);
             }
