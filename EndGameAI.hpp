@@ -2,6 +2,7 @@
 #define INCLUDE_OTHELLOAI_ENDGAME_AI_HPP
 
 #include "OthelloBoard.hpp"
+#include "EndGameEval.hpp"
 #include <cassert>
 #include <vector>
 #include <algorithm>
@@ -90,6 +91,7 @@ private:
     using BoardPair = std::pair<std::pair<u64, u64>, CellState>;
     using EvalPair = std::pair<i64, i64>;
     std::map<BoardPair, EvalPair> hash;
+    EndGameEval eval;
 
     BoardPair makeBoardPair(const OthelloBoard<CellState::BLACK> &board1, const OthelloBoard<CellState::WHITE> &board2) noexcept {
         return BoardPair(std::make_pair(board1.getBitBoard(), board2.getBitBoard()),CellState::BLACK);
@@ -120,8 +122,8 @@ private:
 
         if(isFinished(board1, board2) || depth == 0) {
             i64 result;
-            if(Color1 == myColor) result = countStone(board1);
-            else result = -countStone(board2);
+            if(Color1 == myColor) result = eval(board1,board2);
+            else result = -eval(board2,board1);
             return result;
         }
 
