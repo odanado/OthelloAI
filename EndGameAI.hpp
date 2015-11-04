@@ -89,6 +89,7 @@ private:
     }
 
     void updateHash(const BoardPair &boardPair,const EvalPair &evalPair) noexcept {
+        if(hash.size() > (1<<22)) return;
         if(hash.count(boardPair)) {
             auto pair = hash[boardPair];
             pair.first = std::max(pair.first, evalPair.first);
