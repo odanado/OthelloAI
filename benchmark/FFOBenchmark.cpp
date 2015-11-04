@@ -9,7 +9,7 @@ std::string FFOBenchmark::operator()(const std::string &fileName) {
     BlackBoard blackBoard;
     WhiteBoard whiteBoard;
     input(fileName, &blackBoard, &whiteBoard, &turn, &testName);
-    EndGameAI ai;
+    EndGameAI ai(CellState::BLACK, CellState::WHITE, 12);
 
     if(turn == "Black") {
         ai.setPlayer(CellState::BLACK, CellState::WHITE);
