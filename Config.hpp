@@ -30,6 +30,7 @@ constexpr T minValue() {
 
 using CellType = std::pair<u64, u64>;
 using Cells = std::vector<CellType>;
+using OrderedCells = std::vector<std::pair<i64, CellType>>;
 
 } // end OthelloAI
 

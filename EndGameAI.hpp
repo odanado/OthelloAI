@@ -7,12 +7,15 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <utility>
+#include <random>
+#include <iostream>
 
 namespace OthelloAI {
 
 class EndGameAI {
 public:
-    EndGameAI(CellState myColor = CellState::BLACK, CellState enemyColor = CellState::WHITE, i32 depth = 12) :
+    EndGameAI(CellState myColor = CellState::BLACK, CellState enemyColor = CellState::WHITE, i32 depth = 20) :
         myColor(myColor), enemyColor(enemyColor), DEPTH_LEVEL(depth) {
             assert(myColor != CellState::NONE);
             assert(enemyColor != CellState::NONE);
@@ -31,7 +34,7 @@ public:
         assert(Color2 == enemyColor);
         CellType result(-1,-1);
 
-        auto validCells = makeValidCells(board1, board2);
+        auto validCells = makeOrderedValidCells(board1, board2);
 
         if(!validCells.size()) {
             return result;
@@ -39,27 +42,11 @@ public:
 
         i64 alpha = minValue<i64>();
         i64 beta = maxValue<i64>();
-        std::vector<std::pair<i64,CellType>> orderedValidCells;
-        for(const auto &validCell : validCells) {
-            OthelloBoard<Color1> boardTmp1 = board1;
-            OthelloBoard<Color2> boardTmp2 = board2;
-            putStone(&boardTmp1, &boardTmp2, validCell.first, validCell.second);
-            i64 evalValue = -dfs(boardTmp2, boardTmp1, 4, -beta, -alpha);
-            orderedValidCells.emplace_back(evalValue, validCell);
-        }
 
-        std::sort(orderedValidCells.begin(), orderedValidCells.end(), 
-                [](const std::pair<i64, CellType> &cell1, const std::pair<i64, CellType> &cell2) {
-                    return cell1.first > cell2.first;
-                });
-
-
-        hash.clear();
         i64 a=alpha;
         i64 evalValue  = minValue<i64>();
         bool first=true;
-        for(const auto &orderedValidCell : orderedValidCells) {
-            auto validCell = orderedValidCell.second;
+        for(const auto &validCell : validCells) {
             OthelloBoard<Color1> boardTmp1 = board1;
             OthelloBoard<Color2> boardTmp2 = board2;
 
@@ -92,6 +79,7 @@ private:
     using EvalPair = std::pair<i64, i64>;
     std::map<BoardPair, EvalPair> hash;
     EndGameEval eval;
+    std::mt19937 mt;
 
     BoardPair makeBoardPair(const OthelloBoard<CellState::BLACK> &board1, const OthelloBoard<CellState::WHITE> &board2) noexcept {
         return BoardPair(std::make_pair(board1.getBitBoard(), board2.getBitBoard()),CellState::BLACK);
@@ -138,8 +126,15 @@ private:
             alpha = std::max(alpha, lower);
             beta = std::min(beta, upper);
         }
+        Cells validCells;
+        if(false&&DEPTH_LEVEL-depth < 4) {
+            validCells = makeOrderedValidCells(board1, board2);
+        }
+        else {
+            validCells = makeValidCells(board1, board2);
+        }
+        std::shuffle(validCells.begin(), validCells.end(),mt);
 
-        auto validCells = makeValidCells(board1, board2);
         if(!validCells.size()) {
             return -dfs(board2, board1, depth-1, -beta, -alpha);
         }
@@ -176,6 +171,61 @@ private:
             updateHash(makeBoardPair(board1, board2),EvalPair(minValue<i64>(),maxScore));
 
         return maxScore;
+    }
+
+    template<CellState Color1, CellState Color2>
+    Cells makeOrderedValidCells(const OthelloBoard<Color1> &board1, const OthelloBoard<Color2> &board2) noexcept {
+        i64 alpha = minValue<i64>();
+        i64 beta = maxValue<i64>();
+        OrderedCells orderedValidCells;
+
+        const auto validCells = makeValidCells(board1, board2);
+        for(const auto &validCell : validCells) {
+            OthelloBoard<Color1> boardTmp1 = board1;
+            OthelloBoard<Color2> boardTmp2 = board2;
+            putStone(&boardTmp1, &boardTmp2, validCell.first, validCell.second);
+            i64 evalValue = -negaAlpha(boardTmp2, boardTmp1, 4, -beta, -alpha);
+            orderedValidCells.emplace_back(evalValue, validCell);
+        }
+
+        std::sort(orderedValidCells.begin(), orderedValidCells.end(), 
+                [](const std::pair<i64, CellType> &cell1, const std::pair<i64, CellType> &cell2) {
+                    return cell1.first > cell2.first;
+                });
+        Cells result;
+        for(const auto &orderedValidCell : orderedValidCells) {
+            result.emplace_back(orderedValidCell.second);
+        }
+
+        return std::move(result);
+    }
+
+    template<CellState Color1, CellState Color2>
+    i64 negaAlpha(const OthelloBoard<Color1> &board1, const OthelloBoard<Color2> &board2, i32 depth, i64 alpha, i64 beta) noexcept {
+        assert(alpha <= beta);
+        static_assert(Color1 != Color2,"");
+
+        if(isFinished(board1, board2) || depth == 0) {
+            i64 result;
+            if(Color1 == myColor) result = eval(board1,board2);
+            else result = -eval(board2,board1);
+            return result;
+        }
+        auto validCells = makeValidCells(board1, board2);
+        if(!validCells.size()) {
+            return -negaAlpha(board2, board1, depth-1, -beta, -alpha);
+        }
+        for(const auto &validCell : validCells) {
+            OthelloBoard<Color1> boardTmp1 = board1;
+            OthelloBoard<Color2> boardTmp2 = board2;
+            putStone(&boardTmp1, &boardTmp2, validCell.first, validCell.second);
+            alpha = std::max(alpha, -negaAlpha(boardTmp2, boardTmp1, depth-1, -beta, -alpha));
+            if(alpha >= beta) {
+                return alpha;
+            }
+        }
+
+        return alpha;
     }
 };
 
