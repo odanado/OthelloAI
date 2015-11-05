@@ -65,9 +65,6 @@ public:
     friend bool existStone(const OthelloBoard<myColor> &myBoard, u64 y, u64 x) noexcept;
 
     template<CellState myColor, CellState enemyColor>
-    friend bool reverseStone(OthelloBoard<myColor> *myBoard, OthelloBoard<enemyColor> *enemyBoard, u64 y, u64 x, int dy,int dx) noexcept;
-
-    template<CellState myColor, CellState enemyColor>
     friend bool putStone(OthelloBoard<myColor> *myBoard, OthelloBoard<enemyColor> *enemyBoard, u64 y, u64 x) noexcept;
 
 };
@@ -101,64 +98,177 @@ bool existStone(const OthelloBoard<myColor> &myBoard, u64 y, u64 x) noexcept {
     return myBoard.existStone(y,x);
 }
 
-template<CellState myColor, CellState enemyColor>
-bool reverseStone(OthelloBoard<myColor> *myBoard, OthelloBoard<enemyColor> *enemyBoard, u64 y, u64 x, int dy,int dx) noexcept {
-    assert(myColor != enemyColor);
 
-    // 範囲外
-    if(y > 7 || x > 7) return false;
-    // 隣接する石を移動したけど石のないところに来た
-    if(!myBoard->existStone(y,x) && !enemyBoard->existStone(y,x)) return false;
-    // 自分の石を見つけた
-    if(myBoard->existStone(y,x)) return true;
+inline u64 makeReverseBit(u64 black, u64 white, u64 pos) noexcept {
+    u64 rev=0,tmp,mask;
 
-    bool reversible = reverseStone(myBoard, enemyBoard, y+dy, x+dx, dy, dx);
-
-    // 反転可能な手なら反転する
-    if(reversible) {
-        myBoard->setStone(y,x);
-        enemyBoard->clearStone(y,x);
+    // 右
+    tmp=0;
+    mask = (pos >> 1) & 0x7f7f7f7f7f7f7f7f;
+    while(mask && (mask & white)) {
+        tmp |= mask;
+        mask = (mask >> 1) & 0x7f7f7f7f7f7f7f7f;
     }
+    if(mask & black) rev |= tmp;
 
-    return reversible;
+    // 左
+    tmp=0;
+    mask = (pos << 1) & 0xfefefefefefefefe;
+    while(mask && (mask & white)) {
+        tmp |= mask;
+        mask = (mask << 1) & 0xfefefefefefefefe;
+    }
+    if(mask & black) rev |= tmp;
+
+    // 上
+    tmp=0;
+    mask = (pos << 8);
+    while(mask && (mask & white)) {
+        tmp |= mask;
+        mask = (mask << 8);
+    }
+    if(mask & black) rev |= tmp;
+
+    // 下
+    tmp=0;
+    mask = (pos >> 8);
+    while(mask && (mask & white)) {
+        tmp |= mask;
+        mask = (mask >> 8);
+    }
+    if(mask & black) rev |= tmp;
+
+    // 右上
+    tmp=0;
+    mask = (pos << 7) & 0x7f7f7f7f7f7f7f7f;
+    while(mask && (mask & white)) {
+        tmp |= mask;
+        mask = (mask << 7) & 0x7f7f7f7f7f7f7f7f;
+    }
+    if(mask & black) rev |= tmp;
+
+    // 左上
+    tmp=0;
+    mask = (pos << 9) & 0xfefefefefefefefe;
+    while(mask && (mask & white)) {
+        tmp |= mask;
+        mask = (mask << 9) & 0xfefefefefefefefe;
+    }
+    if(mask & black) rev |= tmp;
+
+    // 右下
+    tmp=0;
+    mask = (pos >> 9) & 0x7f7f7f7f7f7f7f7f;
+    while(mask && (mask & white)) {
+        tmp |= mask;
+        mask = (mask >> 9) & 0x7f7f7f7f7f7f7f7f;
+    }
+    if(mask & black) rev |= tmp;
+    
+    // 左下
+    tmp=0;
+    mask = (pos >> 7) & 0xfefefefefefefefe;
+    while(mask && (mask & white)) {
+        tmp |= mask;
+        mask = (mask >> 7) & 0xfefefefefefefefe;
+    }
+    if(mask & black) rev |= tmp;
+
+
+    return rev;
 }
 
 template<CellState myColor, CellState enemyColor>
 bool putStone(OthelloBoard<myColor> *myBoard, OthelloBoard<enemyColor> *enemyBoard, u64 y, u64 x) noexcept {
-    bool reversible = false;
     assert(myColor != enemyColor);
+
     // 既に石がある
     if(myBoard->existStone(y,x) || enemyBoard->existStone(y,x)) {
         return false;
     }
 
-    for(int dy = -1; dy <= 1; ++dy) {
-        if(y + dy > 7) continue;
-        for(int dx = -1; dx <= 1; ++dx) {
-            if(x + dx > 7) continue;
+    u64 pos = u64(1) << ((y<<3)+x);
+    u64 rev = makeReverseBit(myBoard->bitBoard, enemyBoard->bitBoard, pos);
+    if(rev == 0) 
+        return false;
 
-            // 相手の石がある かつ うまくリバースできた
-            if(enemyBoard->existStone(y+dy, x+dx) && reverseStone(myBoard, enemyBoard, y+dy, x+dx, dy, dx)) {
-                myBoard->setStone(y,x);
-                reversible = true;
-            }
-        }
-    }
+    myBoard->bitBoard ^= pos | rev;
+    enemyBoard->bitBoard ^= rev;
 
-    return reversible;
+    return true;
+}
+
+inline u64 makeReversiblePos(u64 black, u64 white) noexcept {
+    u64 blank = ~(black | white);
+    u64 mobility=0,t,w;
+
+    // 右
+    w = white & 0x7e7e7e7e7e7e7e7e; 
+    t = w & (black << 1);
+    t |= w & (t << 1); t |= w & (t << 1); t |= w & (t << 1);
+    t |= w & (t << 1); t |= w & (t << 1);
+    mobility |= blank & (t << 1);
+
+    // 左
+    w = white & 0x7e7e7e7e7e7e7e7e; 
+    t = w & (black >> 1);
+    t |= w & (t >> 1); t |= w & (t >> 1); t |= w & (t >> 1);
+    t |= w & (t >> 1); t |= w & (t >> 1);
+    mobility |= blank & (t >> 1);
+
+    // 上
+    w = white & 0x00ffffffffffff00;
+    t = w & (black << 8);
+    t |= w & (t << 8); t |= w & (t << 8); t |= w & (t << 8);
+    t |= w & (t << 8); t |= w & (t << 8);
+    mobility |= blank & (t << 8);
+
+    // 下
+    w = white & 0x00ffffffffffff00;
+    t = w & (black >> 8);
+    t |= w & (t >> 8); t |= w & (t >> 8); t |= w & (t >> 8);
+    t |= w & (t >> 8); t |= w & (t >> 8);
+    mobility |= blank & (t >> 8);
+
+    // 右上
+    w = white & 0x007e7e7e7e7e7e00;
+    t = w & (black << 7);
+    t |= w & (t << 7); t |= w & (t << 7); t |= w & (t << 7);
+    t |= w & (t << 7); t |= w & (t << 7);
+    mobility |= blank & (t << 7);
+
+    // 左上
+    w = white & 0x007e7e7e7e7e7e00;
+    t = w & (black << 9);
+    t |= w & (t << 9); t |= w & (t << 9); t |= w & (t << 9);
+    t |= w & (t << 9); t |= w & (t << 9);
+    mobility |= blank & (t << 9);
+    
+    // 右下
+    w = white & 0x007e7e7e7e7e7e00;
+    t = w & (black >> 9);
+    t |= w & (t >> 9); t |= w & (t >> 9); t |= w & (t >> 9);
+    t |= w & (t >> 9); t |= w & (t >> 9);
+    mobility |= blank & (t >> 9);
+
+    // 左下
+    w = white & 0x007e7e7e7e7e7e00;
+    t = w & (black >> 7);
+    t |= w & (t >> 7); t |= w & (t >> 7); t |= w & (t >> 7);
+    t |= w & (t >> 7); t |= w & (t >> 7);
+    mobility |= blank & (t >> 9);
+
+    return mobility;
 }
 
 template<CellState myColor, CellState enemyColor>
 Cells makeValidCells(const OthelloBoard<myColor> &myBoard, const OthelloBoard<enemyColor> &enemyBoard) noexcept {
     Cells cells;
-    for(u64 y = 0; y < 8; ++y) {
-        for(u64 x = 0; x < 8; ++x) {
-            auto myBoardTmp = myBoard;
-            auto enemyBoardTmp = enemyBoard;
 
-            if(putStone(&myBoardTmp, &enemyBoardTmp, y, x)) {
-                cells.emplace_back(y,x);
-            }
+    auto reversiblePos = makeReversiblePos(myBoard.getBitBoard(), enemyBoard.getBitBoard());
+    for(u64 k=0;k<64;++k) {
+        if(reversiblePos>>k&1) {
+            cells.emplace_back(k>>3,k&7);
         }
     }
 
