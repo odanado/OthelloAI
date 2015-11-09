@@ -1,5 +1,6 @@
 #include "../OthelloBoard.hpp"
 #include "gtest/gtest.h"
+#include <algorithm>
 
 class OthelloBoardTest : public ::testing::Test {
 protected:
@@ -144,21 +145,37 @@ TEST_F(OthelloBoardTest, makeValidCells) {
     auto blackBoard = OthelloAI::BlackBoard(0x8080c0c48c8080);
     auto whiteBoard = OthelloAI::WhiteBoard(0x10783f3b737e79);
 
-    auto vaildCells =  makeValidCells(blackBoard, whiteBoard);
-    ASSERT_EQ(vaildCells.size(), std::size_t(10));
-    ASSERT_EQ(vaildCells[0], OthelloAI::CellType(0,1));
-    ASSERT_EQ(vaildCells[1], OthelloAI::CellType(0,2));
-    ASSERT_EQ(vaildCells[2], OthelloAI::CellType(1,0));
-    ASSERT_EQ(vaildCells[3], OthelloAI::CellType(5,0));
-    ASSERT_EQ(vaildCells[4], OthelloAI::CellType(5,2));
-    ASSERT_EQ(vaildCells[5], OthelloAI::CellType(6,2));
-    ASSERT_EQ(vaildCells[6], OthelloAI::CellType(6,3));
-    ASSERT_EQ(vaildCells[7], OthelloAI::CellType(6,5));
-    ASSERT_EQ(vaildCells[8], OthelloAI::CellType(6,6));
-    ASSERT_EQ(vaildCells[9], OthelloAI::CellType(7,3));
+    auto validCells =  makeValidCells(blackBoard, whiteBoard);
+    ASSERT_EQ(validCells.size(), std::size_t(10));
+    ASSERT_EQ(validCells[0], OthelloAI::CellType(0,1));
+    ASSERT_EQ(validCells[1], OthelloAI::CellType(0,2));
+    ASSERT_EQ(validCells[2], OthelloAI::CellType(1,0));
+    ASSERT_EQ(validCells[3], OthelloAI::CellType(5,0));
+    ASSERT_EQ(validCells[4], OthelloAI::CellType(5,2));
+    ASSERT_EQ(validCells[5], OthelloAI::CellType(6,2));
+    ASSERT_EQ(validCells[6], OthelloAI::CellType(6,3));
+    ASSERT_EQ(validCells[7], OthelloAI::CellType(6,5));
+    ASSERT_EQ(validCells[8], OthelloAI::CellType(6,6));
+    ASSERT_EQ(validCells[9], OthelloAI::CellType(7,3));
 
-    vaildCells = makeValidCells(whiteBoard, blackBoard);
-    ASSERT_EQ(vaildCells.size(), std::size_t(0));
+    validCells = makeValidCells(whiteBoard, blackBoard);
+    ASSERT_EQ(validCells.size(), std::size_t(0));
+
+    blackBoard = OthelloAI::BlackBoard(0x001834261f004000);
+    whiteBoard = OthelloAI::WhiteBoard(0x4e240b18607e3c3e);
+    validCells =  makeValidCells(blackBoard, whiteBoard);
+    std::sort(validCells.begin(),validCells.end());
+    ASSERT_EQ(validCells.size(), std::size_t(10));
+    ASSERT_EQ(validCells[0], OthelloAI::CellType(0,6));
+    ASSERT_EQ(validCells[1], OthelloAI::CellType(1,0));
+    ASSERT_EQ(validCells[2], OthelloAI::CellType(1,1));
+    ASSERT_EQ(validCells[3], OthelloAI::CellType(2,7));
+    ASSERT_EQ(validCells[4], OthelloAI::CellType(3,7));
+    ASSERT_EQ(validCells[5], OthelloAI::CellType(4,6));
+    ASSERT_EQ(validCells[6], OthelloAI::CellType(6,0));
+    ASSERT_EQ(validCells[7], OthelloAI::CellType(6,1));
+    ASSERT_EQ(validCells[8], OthelloAI::CellType(6,6));
+    ASSERT_EQ(validCells[9], OthelloAI::CellType(7,5));
 }
 
 TEST_F(OthelloBoardTest, isFinished) {
