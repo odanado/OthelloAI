@@ -256,7 +256,7 @@ inline u64 makeReversiblePos(u64 black, u64 white) noexcept {
     t = w & (black >> 7);
     t |= w & (t >> 7); t |= w & (t >> 7); t |= w & (t >> 7);
     t |= w & (t >> 7); t |= w & (t >> 7);
-    mobility |= blank & (t >> 9);
+    mobility |= blank & (t >> 7);
 
     return mobility;
 }
