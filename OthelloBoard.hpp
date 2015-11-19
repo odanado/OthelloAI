@@ -198,6 +198,12 @@ bool putStone(OthelloBoard<myColor> *myBoard, OthelloBoard<enemyColor> *enemyBoa
     return true;
 }
 
+template<CellState myColor, CellState enemyColor>
+bool putStone(OthelloBoard<myColor> *myBoard, OthelloBoard<enemyColor> *enemyBoard, const CellType &cell) noexcept {
+    assert(myColor != enemyColor);
+    return putStone(myBoard, enemyBoard, cell.first, cell.second);
+}
+
 inline u64 makeReversiblePos(u64 black, u64 white) noexcept {
     u64 blank = ~(black | white);
     u64 mobility=0,t,w;
